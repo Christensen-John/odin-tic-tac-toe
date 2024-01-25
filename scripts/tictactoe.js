@@ -59,19 +59,32 @@ function Gameboard() {
   const getDownRightDiagonal = (cellRow, cellColumn) => {
     let diagonalSet = [];
     board.forEach((row, rowIndex) => {
-      let offset = rowIndex - cellColumn;
-      let cellValue = row[cellColumn + offset].getValue();
-      diagonalSet.push(cellValue);
+      row.forEach((cell, columnIndex) => {
+        let rowOffset = rowIndex - cellRow;
+        let columnOffset = columnIndex - cellColumn;
+        //Cells in the down/right angle set have the same values when normalized by distance from the chosen cell.
+        if (rowOffset === columnOffset) {
+          diagonalSet.push(cell.getValue());
+        }
+      });
     });
     return diagonalSet;
   };
 
   const getUpRightDiagonal = (cellRow, cellColumn) => {
-    //Returns all cells in up-right diagonal
-    // let diagonalSet = [];
-    // board.forEach((row, rowIndex) => {
-    //   let offset = rowIndex
-    // })
+    let diagonalSet = [];
+    board.forEach((row, rowIndex) => {
+      row.forEach((cell, columnIndex) => {
+        let rowOffset = rowIndex - cellRow;
+        let columnOffset = columnIndex - cellColumn;
+        //Cells in the up/right angle set have opposite values for row and column when normalized by distance from the chosen cell.
+        //Therefore one value of the pair needs to be muliplied by -1 to check if they are the "same" distance.
+        if (rowOffset * -1 === columnOffset) {
+          diagonalSet.push(cell.getValue());
+        }
+      });
+    });
+    return diagonalSet;
   };
 
   const getCellSets = (row, column) => {
@@ -83,7 +96,12 @@ function Gameboard() {
     return sets;
   };
 
-  return { getBoard, makePlay, printBoard, getCellSets, getDownRightDiagonal };
+  return {
+    getBoard,
+    makePlay,
+    printBoard,
+    getCellSets,
+  };
 }
 
 /**
