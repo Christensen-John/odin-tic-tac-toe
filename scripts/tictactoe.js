@@ -178,23 +178,31 @@ function GameController(
    * @param {int} column The column of the cell that the active player is choosing to play on
    */
   const playRound = (row, column) => {
-    //Log the play
-    console.log(
-      `${activePlayer.name} is marking cell row: ${row} x column: ${column}...`
-    );
-
-    board.makePlay(row, column, getActivePlayer().mark);
-
-    //TODO: CHECK FOR A WINNER HERE
-    if (checkWinState(row, column)) {
-      board.printBoard();
-      console.log(`${activePlayer.name} wins!`);
-    } else {
-      switchPlayerTurn();
+    if (board.getBoard()[row][column].getValue() !== "") {
+      console.log(
+        `Spot already played on! Please choose another spot to play.`
+      );
       printNewRound();
-    }
+    } else {
+      //Log the play
+      console.log(
+        `${activePlayer.name} is marking cell row: ${row} x column: ${column}...`
+      );
 
-    //Switch the player turn
+      //Make the play
+      board.makePlay(row, column, getActivePlayer().mark);
+
+      //Check if move wins
+      if (checkWinState(row, column)) {
+        //Move win the game! Print the result
+        board.printBoard();
+        console.log(`${activePlayer.name} wins!`);
+      } else {
+        //Move did not win. Switch players and play another round
+        switchPlayerTurn();
+        printNewRound();
+      }
+    }
   };
 
   const checkWinState = (row, col) => {
