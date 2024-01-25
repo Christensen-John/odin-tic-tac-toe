@@ -178,7 +178,7 @@ function GameController(
    * @param {int} column The column of the cell that the active player is choosing to play on
    */
   const playRound = (row, column) => {
-    if (board.getBoard()[row][column].getValue() !== "") {
+    if (!isLegalMove(row, column)) {
       console.log(
         `Spot already played on! Please choose another spot to play.`
       );
@@ -203,6 +203,10 @@ function GameController(
         printNewRound();
       }
     }
+  };
+
+  const isLegalMove = (row, column) => {
+    return board.getBoard()[row][column] === "" ? true : false;
   };
 
   const checkWinState = (row, col) => {
