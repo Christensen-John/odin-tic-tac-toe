@@ -186,69 +186,45 @@ function GameController(
     board.makePlay(row, column, getActivePlayer().mark);
 
     //TODO: CHECK FOR A WINNER HERE
-    // let winState = checkWinState(row, column);
+    if (checkWinState(row, column)) {
+      board.printBoard();
+      console.log(`${activePlayer.name} wins!`);
+    } else {
+      switchPlayerTurn();
+      printNewRound();
+    }
 
     //Switch the player turn
-    switchPlayerTurn();
-    printNewRound();
   };
 
-  /**
-   * Creates and returns arrays of all cells that may be necessary to win a game of Tic Tac Toe.
-   * Used by the checkWinState function
-   */
-  const getGoalSets = (row, col) => {
-    let currentBoardState = board.getBoard();
-
-    //Set up arrays to hold the different values
-    let horizontalSet = [];
-    let verticalSet = [];
-    let diagonalDownRightSet = [];
-    let diagonalUpRightSet = [];
-
-    //Look at each cell in each row and add a cell to a specific array. Return the four arrays.
-    //There are 4 possible lists we want:
-    ////Horizontal: the cells in the same row (easy);
-    ////Vertical: the cells in the same column (easy);
-    ////Diagonal-down-right: the cells in a diagonal that descends as it goes right
-    ////Diagonal-up-right: the cells in a diagonal that descends as it goes right
-    //It the cell is in the same vertical column then
-    currentBoardState.forEach((row, rowIndex) => {
-      //Used to calculate correct diagonal position. When 1 row above cell, diagonal is 1 column to left or right
-      let offset = row - rowIndex;
-
-      //The second loop may not be necessary.
-      //--!!TRY LATER JUST USING ROWS/WITHOUT THE SECOND LOOP!!--
-      row.forEach((cell, columnIndex) => {
-        if (rowIndex === row) {
-          //Cell is in the same row
-          horizontalSet.push(cell.getValue());
-        } else if (columnIndex === col) {
-          //Cell is in the same column
-          verticalSet.push(cell.getValue);
-        } else if (rowIndex < row) {
-          //All rows above the cell
-          //The cell may be one of the diagonals "above" the current cell
-        } else {
-          //All rows below the cell
-          //The cell may be
-        }
-      });
+  const checkWinState = (row, col) => {
+    let sets = board.getCellSets(row, col);
+    let winState = false;
+    sets.forEach((set) => {
+      checkSetEquality(set) ? (winState = true) : "continue";
     });
+    return winState;
   };
 
-  // const checkWinState = (row, col) => {
-  //   let diagonalPossible = column > 0 && column < board.getBoard.length - 1;
-  //   if (diagonalPossible) {
-  //   }
-  // };
+  const checkSetEquality = (cellSet) => {
+    if (cellSet.length < 3) {
+      return false;
+    }
+    let cellEquality = true;
+    let firstValue = cellSet[0];
+    cellSet.forEach((value) => {
+      firstValue === value ? "continue" : (cellEquality = false);
+    });
+    return cellEquality;
+  };
 
   //Start a new game here
   printNewRound();
 
-  const getBoard = () => board;
+  //Function below for testing only
+  // const getBoard = () => board;
 
-  return { playRound, getActivePlayer, getBoard };
+  return { playRound, getActivePlayer, checkSetEquality };
 }
 
 const game = GameController();
