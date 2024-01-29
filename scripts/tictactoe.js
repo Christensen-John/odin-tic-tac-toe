@@ -5,16 +5,16 @@ function ScreenController() {
 
   const updateScreen = (winMarker) => {
     let board = game.getBoard();
+    resetHTMLContent();
+    updateHTMLPlayerIndicator();
+    updateHTMLGameBoard(board);
     if (winMarker === 0) {
       displayTie();
       //tie
     } else if (winMarker === 1) {
-      displayWin(board);
+      displayWin(game.getActivePlayer().name);
       //active player wins
     } else {
-      resetHTMLContent();
-      updateHTMLPlayerIndicator();
-      updateHTMLGameBoard(board);
     }
   };
 
@@ -52,8 +52,8 @@ function ScreenController() {
     resetGameWindow();
   };
 
-  const displayWin = (brd) => {
-    window.alert(`${brd.getActivePlayer()} wins!`);
+  const displayWin = (winnerName) => {
+    window.alert(`${winnerName} wins!`);
     resetGameWindow();
   };
 
