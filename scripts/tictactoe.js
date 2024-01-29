@@ -36,7 +36,7 @@ function ScreenController() {
         cellButton.classList.add("cell");
         cellButton.dataset.row = rowIndex;
         cellButton.dataset.column = columnIndex;
-        let buttonText = "_";
+        let buttonText = "";
         let cellVal = cell.getValue();
         if (cellVal === "X" || cellVal === "O") {
           buttonText = cellVal;
