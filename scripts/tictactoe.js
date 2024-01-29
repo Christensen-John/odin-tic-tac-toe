@@ -64,7 +64,6 @@ function ScreenController() {
   function clickHandlerBoard(e) {
     let cellRow = Number(e.target.dataset.row);
     let cellColumn = Number(e.target.dataset.column);
-    if (!cellRow && !cellColumn) return;
 
     let winMarker = game.playRound(cellRow, cellColumn);
     updateScreen(winMarker);
