@@ -1,3 +1,80 @@
+function ScreenController() {
+  const htmlBoard = document.querySelector(".gameboard");
+  const htmlPlayerIndicator = document.querySelector(".playerIndicator");
+  const game = GameController();
+
+  const updateScreen = (winMarker) => {
+    let board = game.getBoard();
+    if (winMarker === 0) {
+      displayTie();
+      //tie
+    } else if (winMarker === 1) {
+      displayWin(board);
+      //active player wins
+    } else {
+      resetHTMLContent();
+      updateHTMLPlayerIndicator();
+      updateHTMLGameBoard(board);
+    }
+  };
+
+  //Helper Functions
+  const resetHTMLContent = () => {
+    htmlBoard.innerHTML = "";
+    htmlPlayerIndicator.innerHTML = "";
+  };
+
+  const updateHTMLPlayerIndicator = () => {
+    let currentPlayer = game.getActivePlayer().name;
+    htmlPlayerIndicator.innerHTML = `${currentPlayer}'s turn`;
+  };
+
+  const updateHTMLGameBoard = (brd) => {
+    brd.forEach((row, rowIndex) => {
+      row.forEach((cell, columnIndex) => {
+        const cellButton = document.createElement("button");
+        cellButton.classList.add("cell");
+        cellButton.dataset.row = rowIndex;
+        cellButton.dataset.column = columnIndex;
+        let buttonText = "_";
+        let cellVal = cell.getValue();
+        if (cellVal === "X" || cellVal === "O") {
+          buttonText = cellVal;
+        }
+        cellButton.textContent = buttonText;
+        htmlBoard.appendChild(cellButton);
+      });
+    });
+  };
+
+  const displayTie = () => {
+    window.alert("The game is a tie! Play again?");
+    resetGameWindow();
+  };
+
+  const displayWin = (brd) => {
+    window.alert(`${brd.getActivePlayer()} wins!`);
+    resetGameWindow();
+  };
+
+  const resetGameWindow = () => {
+    //TODO
+  };
+
+  function clickHandlerBoard(e) {
+    let cellRow = Number(e.target.dataset.row);
+    let cellColumn = Number(e.target.dataset.column);
+    if (!cellRow && !cellColumn) return;
+
+    let winMarker = game.playRound(cellRow, cellColumn);
+    updateScreen(winMarker);
+  }
+
+  htmlBoard.addEventListener("click", clickHandlerBoard);
+
+  updateScreen();
+}
+
 function Gameboard() {
   const boardSize = 3;
   const board = [];
@@ -192,21 +269,26 @@ function GameController(
       //Make the play
       board.makePlay(row, column, getActivePlayer().mark);
 
+      let winState = -1;
       //Check if move wins
       if (checkWinState(row, column)) {
-        //Move win the game! Print the result
         board.printBoard();
         console.log(`${activePlayer.name} wins!`);
+        return 1;
+      } else if (checkForDraw(board.getBoard())) {
+        return 0;
       } else {
         //Move did not win. Switch players and play another round
         switchPlayerTurn();
         printNewRound();
+        return -1;
       }
     }
   };
 
   const isLegalMove = (row, column) => {
-    return board.getBoard()[row][column] === "" ? true : false;
+    let cellToCheck = board.getBoard()[row][column];
+    return cellToCheck.getValue() === "" ? true : false;
   };
 
   const checkWinState = (row, col) => {
@@ -230,13 +312,30 @@ function GameController(
     return cellEquality;
   };
 
+  const checkForDraw = (brd) => {
+    brd.forEach((row) => {
+      row.forEach((cell) => {
+        if (cell.getValue() === "") {
+          return false;
+        }
+      });
+    });
+  };
+
   //Start a new game here
   printNewRound();
 
   //Function below for testing only
   // const getBoard = () => board;
 
-  return { playRound, getActivePlayer, checkSetEquality };
+  return {
+    playRound,
+    getActivePlayer,
+    checkSetEquality,
+    //Pass on the ability to see the board in a neat way without having to write two getboard functions in two modules
+    getBoard: board.getBoard,
+  };
 }
 
-const game = GameController();
+// const game = GameController();
+ScreenController();
